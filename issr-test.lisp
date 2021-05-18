@@ -20,11 +20,19 @@
 
 (markup:enable-reader)
 
-(defparameter server
-  (start (make-instance 'hunchentoot:easy-acceptor
-                        :port 8080
-                        :document-root "resources/")
-         :ws-port 4433))
+(djula:add-template-directory (asdf:system-relative-pathname "issr-test" "templates/"))
+(defparameter +base.html+ (djula:compile-template* "base.html"))
+(defparameter +products.html+ (djula:compile-template* "products.html"))
+
+(defparameter *server* nil
+  "Hunchentoot acceptor.")
+
+(defun start-app ()
+  (setf *server*
+        (start (make-instance 'hunchentoot:easy-acceptor
+                              :port 8080
+                              :document-root "resources/")
+               :ws-port 4433)))
 
 (defparameter *products* (list))
 
@@ -74,38 +82,42 @@
                                 new-task
                                 (string= add-new-task "add")
                                 (not (str:blankp new-task)))))
-    (log:info add-new-task new-task add-new-product-p)
+    (log:info add-new-task new-task add-new-product-p
+              (hunchentoot:get-parameters*)
+              (hunchentoot:post-parameters*))
     (when add-new-product-p
       (setf *products* (append *products*
                                (list (make-instance 'product :title new-task)))))
-    (write-html
-     <base-template title="Hello Products | ISSR" >
-       <body>
-         <h1>To Do List</h1>
-         <ul>
-           ,@(loop for todo in *products*
-                   for index from 0 below (length *products*)
-                   collect
-                   <li>
-                  ,(progn (title todo))
-                   </li>)
-         </ul>
-         <!-- The value attribute is to remove the content when
-              a new task was just added. The update attribute is
-              to ensure that the value of empty string is updated
-              on the client. -->
-         <input name="new-task"
-                value=(when add-new-product-p
-                        "")
-                update=add-new-product-p
-                placeholder="Product name"
-                onkeydown="if (event.keyCode == 13)
-                             rr({action:'add-new-task',
-                                 value:'add'})"/>
-         <button action="add-new-task"
-                 value="add"
-                 onclick="rr(this)">
-           Add
-         </button>
-       </body>
-     </base-template>)))
+    ;; (write-html
+    ;;  <base-template title="Hello Products | ISSR" >
+    ;;      <h1>To Do List</h1>
+    ;;      <ul>
+    ;;        ,@(loop for todo in *products*
+    ;;                for index from 0 below (length *products*)
+    ;;                collect
+    ;;                <li>
+    ;;               ,(progn (title todo))
+    ;;                </li>)
+    ;;      </ul>
+    ;;      <!-- The value attribute is to remove the content when
+    ;;           a new task was just added. The update attribute is
+    ;;           to ensure that the value of empty string is updated
+    ;;           on the client. -->
+    ;;      <input name="new-task"
+    ;;             value=(when add-new-product-p
+    ;;                     "")
+    ;;             update=add-new-product-p
+    ;;             placeholder="Product name"
+    ;;             onkeydown="if (event.keyCode == 13)
+    ;;                          rr({action:'add-new-task',
+    ;;                              value:'add'})"/>
+    ;;      <button action="add-new-task"
+    ;;              value="add"
+    ;;              onclick="rr(this)">
+    ;;        Add
+    ;;      </button>
+    ;;  </base-template>)
+    (djula:render-template* +products.html+ nil
+                            :products *products*)
+
+    ))

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}
+ISSR demo with Djula
+{% endblock %}
+
+{% block content %}
+
+<h1>To Do List</h1>
+
+<ul>
+  {% for todo in products %}
+  <!-- for index from 0 below (length *products*) -->
+  <!-- index: use forloop.counter0 -->
+  <li>
+    {{ todo.title }}
+  </li>
+  {% endfor %}
+</ul>
+
+<!-- The value attribute is to remove the content when
+     a new task was just added. The update attribute is
+     to ensure that the value of empty string is updated
+     on the client. -->
+<input name="new-task"
+       placeholder="Product name"
+       onkeydown="if (event.keyCode == 13) rr({action:'add-new-task', value:'add'})"
+/>
+
+
+<button action="add-new-task" value="add" onclick="rr(this)">
+  Add
+</button>
+
+{% endblock %}
