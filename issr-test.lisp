@@ -76,6 +76,37 @@
 
 (defparameter todos (list))
 
+(defun render-markup-template (products &key add-new-product-p)
+  (write-html
+     <base-template title="Hello Products | ISSR" >
+         <h1>To Do List</h1>
+         <ul>
+           ,@(loop for todo in products
+                   for index from 0 below (length products)
+                   collect
+                   <li>
+                  ,(progn (title todo))
+                   </li>)
+         </ul>
+         <!-- The value attribute is to remove the content when
+              a new task was just added. The update attribute is
+              to ensure that the value of empty string is updated
+              on the client. -->
+         <input name="new-task"
+                value=(when add-new-product-p
+                        "")
+                update=add-new-product-p
+                placeholder="Product name"
+                onkeydown="if (event.keyCode == 13)
+                             rr({action:'add-new-task',
+                                 value:'add'})"/>
+         <button action="add-new-task"
+                 value="add"
+                 onclick="rr(this)">
+           Add
+         </button>
+         </base-template>))
+
 (define-easy-handler (products :uri "/products")
     (add-new-task new-task)
   (let ((add-new-product-p (and add-new-task
@@ -88,35 +119,7 @@
     (when add-new-product-p
       (setf *products* (append *products*
                                (list (make-instance 'product :title new-task)))))
-    ;; (write-html
-    ;;  <base-template title="Hello Products | ISSR" >
-    ;;      <h1>To Do List</h1>
-    ;;      <ul>
-    ;;        ,@(loop for todo in *products*
-    ;;                for index from 0 below (length *products*)
-    ;;                collect
-    ;;                <li>
-    ;;               ,(progn (title todo))
-    ;;                </li>)
-    ;;      </ul>
-    ;;      <!-- The value attribute is to remove the content when
-    ;;           a new task was just added. The update attribute is
-    ;;           to ensure that the value of empty string is updated
-    ;;           on the client. -->
-    ;;      <input name="new-task"
-    ;;             value=(when add-new-product-p
-    ;;                     "")
-    ;;             update=add-new-product-p
-    ;;             placeholder="Product name"
-    ;;             onkeydown="if (event.keyCode == 13)
-    ;;                          rr({action:'add-new-task',
-    ;;                              value:'add'})"/>
-    ;;      <button action="add-new-task"
-    ;;              value="add"
-    ;;              onclick="rr(this)">
-    ;;        Add
-    ;;      </button>
-    ;;  </base-template>)
+    ;; (render-markup-template *products* :add-new-product-p add-new-product-p)
     (djula:render-template* +products.html+ nil
                             :products *products*)
 
