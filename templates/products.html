@@ -4,6 +4,7 @@
 ISSR demo with Djula
 {% endblock %}
 
+<!-- xxx: those are required only once at startup. -->
 {% block issr-id %}
 {{ issr-id }}
 {% endblock %}
@@ -17,20 +18,20 @@ ISSR demo with Djula
 <h1>To Do List</h1>
 
 <ul>
-  {% for todo in products %}
+  {% for product in products %}
   <!-- for index from 0 below (length *products*) -->
   <!-- index: use forloop.counter0 -->
   <li>
-    {% if todo.done %}
-    <strike> {{ todo.title }} </strike>
+    {% if product.done %}
+    <strike> {{ product.title }} </strike>
     {% else %}
-    <span> {{ todo.title }} </span>
+    <span> {{ product.title }} </span>
     {% endif %}
 
     <button action="check"
-            value="{{ todo.id }}"
+            value="{{ product.id }}"
             onclick="rr(this)">
-      {% if todo.done %}
+      {% if product.done %}
       Mark Not Done
       {% else %}
       Mark Done
@@ -53,7 +54,6 @@ ISSR demo with Djula
        placeholder="Product name"
        onkeydown="if (event.keyCode == 13) rr({action:'add-new-task', value:'add'})"
 />
-
 
 <button action="add-new-task" value="add" onclick="rr(this)">
   Add
