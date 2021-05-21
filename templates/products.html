@@ -76,6 +76,15 @@ ISSR demo with Djula
                 </button>
               </td>
 
+              <td>
+                <span class="icon" style="cursor: pointer"
+                    action="delete-product"
+                    value="{{ product.id }}"
+                    onclick="rr(this)">
+                  <i class="fas fa-trash-alt"></i>
+                </span>
+              </td>
+
             </td>
           </tr>
           {% endfor %}

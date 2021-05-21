@@ -58,6 +58,9 @@
 (defun find-product-by-id (id)
   (find id *products* :test #'equal :key #'product-id))
 
+(defun delete-product-from-id (id)
+  (delete id *products* :test #'equal :key #'product-id))
+
 (defun create-products ()
   (loop for title in '("foo" "bar" "baz")
      collect (make-product title)))
@@ -123,7 +126,8 @@
     ;; Actions:
     (add-new-task
      new-task
-     check)
+     check
+     delete-product)
   (let ((add-new-product-p (and add-new-task
                                 new-task
                                 (string= add-new-task "add")
@@ -144,6 +148,11 @@
       (let* ((product (find-product-by-id check)))
         (print (setf (done product)
                      (not (done product))))))
+
+    ;; Delete item.
+    (when (str:non-blank-string-p delete-product)
+      (log:info delete-product)
+      (setf *products* (delete-product-from-id delete-product)))
 
     ;; (render-markup-template *products* :add-new-product-p add-new-product-p)
     (djula:render-template* +products.html+ nil
