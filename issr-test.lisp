@@ -121,6 +121,8 @@
                                (list (make-instance 'product :title new-task)))))
     ;; (render-markup-template *products* :add-new-product-p add-new-product-p)
     (djula:render-template* +products.html+ nil
+                            :issr-id *id*
+                            :ws-port *ws-port*
                             :products *products*)
 
     ))

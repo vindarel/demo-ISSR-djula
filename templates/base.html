@@ -2,7 +2,12 @@
     <head>
      <title> {% block title %} {{ title }} {% endblock %}</title>
      <script src="/issr.js"></script>
-     <script noupdate="t"> "setup({{ id }}, {{ ws-port }})
+     <script noupdate="t">
+       connect(
+           {% block issr-id %} {{ issr-id }} {% endblock %},
+           'ws',
+           {% block ws-port %} {{ ws-port }} {% endblock %}
+       )
      </script>
     </head>
     <body>
