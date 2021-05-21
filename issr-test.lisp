@@ -5,6 +5,8 @@
 ;; elisp side:
 ;; (add-to-list 'load-path "~/quicklisp/dists/quicklisp/software/markup-20201220-git/")
 ;; (require 'lisp-markup)
+;;
+;; It's possible to use C-c C-p to eval and print the generated HTML in a buffer. With djula:render-template* or markup.
 
 (defpackage :issr-test
   (:use :cl
@@ -18,14 +20,14 @@
 
 (in-package #:issr-test)
 
-(markup:enable-reader)
-
 (djula:add-template-directory (asdf:system-relative-pathname "issr-test" "templates/"))
 (defparameter +base.html+ (djula:compile-template* "base.html"))
 (defparameter +products.html+ (djula:compile-template* "products.html"))
 
 (defparameter *server* nil
   "Hunchentoot acceptor.")
+
+(defparameter *products* (list))
 
 (defun start-app ()
   (setf *server*
@@ -34,8 +36,11 @@
                               :document-root "resources/")
                :ws-port 4433)))
 
-(defparameter *products* (list))
-
+;;
+;; models.lisp
+;;
+;; Imagine it's our DB interface.
+;;
 (defclass product ()
   ((id :initform (string (gensym "ID-"))
        :accessor product-id)
@@ -65,63 +70,18 @@
   (loop for title in '("foo" "bar" "baz")
      collect (make-product title)))
 
+;; Start with data.
 (setf *products* (create-products))
 
-(markup:deftag base-template (children &key title)
-  ;; naming it simply "base" fails ?!
-  <html>
-    <head>
-     <title>,(progn title)</title>
-     <script src="/issr.js"></script>
-     <script noupdate="t">
-     ,(format nil "setup(~a,~a)" *id* *ws-port*)
-     </script>
-    </head>
-    <body>
-      ,@(progn children)
-    </body>
-  </html>)
+;;
+;; end of the models interface.
+;;
 
-#+(or)
-;; use C-c C-p to eval and print the generated HTML in a buffer.
-(markup:write-html
-     <base-template title="Hello" >
-        <h1>hello world!</h1>
-     </base-template>)
-
-(defparameter todos (list))
-
-(defun render-markup-template (products &key add-new-product-p)
-  (write-html
-     <base-template title="Hello Products | ISSR" >
-         <h1>To Do List</h1>
-         <ul>
-           ,@(loop for todo in products
-                   for index from 0 below (length products)
-                   collect
-                   <li>
-                  ,(progn (title todo))
-                   </li>)
-         </ul>
-         <!-- The value attribute is to remove the content when
-              a new task was just added. The update attribute is
-              to ensure that the value of empty string is updated
-              on the client. -->
-         <input name="new-task"
-                value=(when add-new-product-p
-                        "")
-                update=add-new-product-p
-                placeholder="Product name"
-                onkeydown="if (event.keyCode == 13)
-                             rr({action:'add-new-task',
-                                 value:'add'})"/>
-         <button action="add-new-task"
-                 value="add"
-                 onclick="rr(this)">
-           Add
-         </button>
-         </base-template>))
-
+;;
+;; views / route
+;;
+;; We have one route: localhost:8080/products
+;;
 (define-easy-handler (products :uri "/products")
     ;; Actions:
     (add-new-task
@@ -159,6 +119,8 @@
                             :issr-id *id*
                             :ws-port *ws-port*
                             :products *products*
-                            :add-new-task add-new-task)
+                            :add-new-task add-new-task)))
 
-    ))
+;;
+;; and that's it.
+;;
