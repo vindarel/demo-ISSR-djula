@@ -37,18 +37,30 @@
 (defparameter *products* (list))
 
 (defclass product ()
-  ((title :initform ""
+  ((id :initform (string (gensym "ID-"))
+       :accessor product-id)
+   (title :initform ""
           :initarg :title
           :accessor title
-          :type string)))
+          :type string)
+   (done :initform nil
+         :initarg :done
+         :accessor done
+         :type boolean)))
 
 (defmethod print-object ((obj product) stream)
   (print-unreadable-object (obj stream :type t)
     (format stream "~a" (slot-value obj 'title))))
 
+(defun make-product (title)
+  (make-instance 'product :title title))
+
+(defun find-product-by-id (id)
+  (find id *products* :test #'equal :key #'product-id))
+
 (defun create-products ()
   (loop for title in '("foo" "bar" "baz")
-     collect (make-instance 'product :title title)))
+     collect (make-product title)))
 
 (setf *products* (create-products))
 
