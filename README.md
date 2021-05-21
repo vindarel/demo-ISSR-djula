@@ -7,6 +7,18 @@ Overview: https://github.com/interactive-ssr/client/blob/master/main.org
 
 > What makes ISSR unique is its lack of any kind of client-side programming. Other Server based frameworks allow you write what would normally be written in Javascript onto the server. ISSR goes a step further into the land of declarative programming by moving any interactive changes into the realm of HTML generation (rather than DOM manipulation). The web developer only needs to know HTML and the server-side programming language (and CSS if you want styles); No knowledge about Javascript or DOM is necessary.
 
+## Demo
+
+I did the todo-app again, but with Djula templates (Django-like templates, although more flexible, it's Lisp).
+
+It's time to envision serious things with this library.
+
+This is interactive as we expect:
+
+![](shot.png)
+
+## Usage
+
 load issr-test.asd (C-c C-k)
 
 (ql:quickload "issr-test")
