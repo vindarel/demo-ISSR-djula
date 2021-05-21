@@ -149,6 +149,7 @@
     (djula:render-template* +products.html+ nil
                             :issr-id *id*
                             :ws-port *ws-port*
-                            :products *products*)
+                            :products *products*
+                            :add-new-task add-new-task)
 
     ))
