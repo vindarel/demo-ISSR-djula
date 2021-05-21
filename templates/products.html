@@ -15,48 +15,79 @@ ISSR demo with Djula
 
 {% block content %}
 
-<h1>To Do List</h1>
+<section class="section">
 
-<ul>
-  {% for product in products %}
-  <!-- for index from 0 below (length *products*) -->
-  <!-- index: use forloop.counter0 -->
-  <li>
-    {% if product.done %}
-    <strike> {{ product.title }} </strike>
-    {% else %}
-    <span> {{ product.title }} </span>
-    {% endif %}
+  <div class="container">
+    <div class="columns">
 
-    <button action="check"
-            value="{{ product.id }}"
-            onclick="rr(this)">
-      {% if product.done %}
-      Mark Not Done
-      {% else %}
-      Mark Done
-      {% endif %}
-    </button>
+      <div class="column">
+      </div>
 
-  </li>
-  {% endfor %}
-</ul>
+      <div class="column is-two-thirds">
+        <h1 class="is-size-2">To Do List</h1>
 
-<!-- The value attribute is to remove the content when
-     a new task was just added. The update attribute is
-     to ensure that the value of empty string is updated
-     on the client. -->
-<input name="new-task"
-       {% if add-new-task %}
-       value=""
-       {% endif %}
-       update="{{ add-new-task }}"
-       placeholder="Product name"
-       onkeydown="if (event.keyCode == 13) rr({action:'add-new-task', value:'add'})"
-/>
+        <!-- The value attribute is to remove the content when
+             a new task was just added. The update attribute is
+             to ensure that the value of empty string is updated
+             on the client. -->
+        <div class="field has-addons">
+          <div class="control">
+            <input name="new-task"
+                class="input is-link"
+                type="text"
+                {% if add-new-task %}
+                value=""
+                {% endif %}
+                update="{{ add-new-task }}"
+                placeholder="Product name"
+                onkeydown="if (event.keyCode == 13) rr({action:'add-new-task', value:'add'})"
+            />
 
-<button action="add-new-task" value="add" onclick="rr(this)">
-  Add
-</button>
+          </div>
+          <div class="control">
+            <button action="add-new-task" value="add" onclick="rr(this)"
+                class="button is-link">
+              Add
+            </button>
+          </div>
+        </div>
+
+
+        <table class="table">
+          {% for product in products %}
+          <tr>
+            <td>
+              {% if product.done %}
+              <strike> {{ product.title }} </strike>
+              {% else %}
+              <span> {{ product.title }} </span>
+              {% endif %}
+
+              <td>
+                <button action="check"
+                    value="{{ product.id }}"
+                    onclick="rr(this)"
+                    class="button is-small is-primary is-outlined">
+                  {% if product.done %}
+                  Mark Not Done
+                  {% else %}
+                  Mark Done
+                  {% endif %}
+                </button>
+              </td>
+
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+
+      </div>
+
+      <div class="column">
+      </div>
+
+    </div>
+  </div>
+</section>
 
 {% endblock %}
