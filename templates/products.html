@@ -21,7 +21,22 @@ ISSR demo with Djula
   <!-- for index from 0 below (length *products*) -->
   <!-- index: use forloop.counter0 -->
   <li>
-    {{ todo.title }}
+    {% if todo.done %}
+    <strike> {{ todo.title }} </strike>
+    {% else %}
+    <span> {{ todo.title }} </span>
+    {% endif %}
+
+    <button action="check"
+            value="{{ todo.id }}"
+            onclick="rr(this)">
+      {% if todo.done %}
+      Mark Not Done
+      {% else %}
+      Mark Done
+      {% endif %}
+    </button>
+
   </li>
   {% endfor %}
 </ul>

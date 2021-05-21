@@ -120,17 +120,31 @@
          </base-template>))
 
 (define-easy-handler (products :uri "/products")
-    (add-new-task new-task)
+    ;; Actions:
+    (add-new-task
+     new-task
+     check)
   (let ((add-new-product-p (and add-new-task
                                 new-task
                                 (string= add-new-task "add")
-                                (not (str:blankp new-task)))))
+                                (not (str:blankp new-task))))
+        new-product)
     (log:info add-new-task new-task add-new-product-p
               (hunchentoot:get-parameters*)
               (hunchentoot:post-parameters*))
+
+    ;; Create a new product?
     (when add-new-product-p
+      (setf new-product (make-product new-task))
       (setf *products* (append *products*
-                               (list (make-instance 'product :title new-task)))))
+                               (list new-product))))
+
+    ;; Toggle the "done" state?
+    (when (str:non-blank-string-p check)
+      (let* ((product (find-product-by-id check)))
+        (print (setf (done product)
+                     (not (done product))))))
+
     ;; (render-markup-template *products* :add-new-product-p add-new-product-p)
     (djula:render-template* +products.html+ nil
                             :issr-id *id*
