@@ -51,7 +51,12 @@
    (done :initform nil
          :initarg :done
          :accessor done
-         :type boolean)))
+         :type boolean)
+   (weight :initform (1+ (random 4))
+           ;; :initarg :weight
+           :accessor weight
+           :type integer
+           :documentation "We give a weight to the item, only to print more elements on the page.")))
 
 (defmethod print-object ((obj product) stream)
   (print-unreadable-object (obj stream :type t)
@@ -93,9 +98,7 @@
                                 (string= add-new-task "add")
                                 (not (str:blankp new-task))))
         new-product)
-    (log:info add-new-task new-task add-new-product-p
-              (hunchentoot:get-parameters*)
-              (hunchentoot:post-parameters*))
+    (log:info add-new-task new-task add-new-product-p (hunchentoot:get-parameters*))
 
     ;; Create a new product?
     (when add-new-product-p
@@ -119,6 +122,11 @@
                             :issr-id *id*
                             :ws-port *ws-port*
                             :products *products*
+                            :products-weight (loop for item in *products*
+                                                sum (weight item))
+                            :todos (loop for item in *products*
+                                              unless (done item)
+                                              collect item)
                             :add-new-task add-new-task)))
 
 ;;

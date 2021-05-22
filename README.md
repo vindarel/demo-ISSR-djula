@@ -27,3 +27,12 @@ Access http://localhost:8080/products
 
 
 See also: https://github.com/dbohdan/liveviews
+
+### Remarks
+
+- We can't update little parts of the DOM. That is not the philosophy of ISSR.
+- How to add transitions on added elements? It seems difficult (it's possible in JS. htmx has workarounds for this).
+
+## See also:
+
+- https://htmx.org/ - similar in scope. We can update precise parts of the DOM, built-in transitions support…

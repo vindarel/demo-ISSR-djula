@@ -52,6 +52,20 @@ ISSR demo with Djula
           </div>
         </div>
 
+        <div>
+          <!-- Found a bug. Trying to print these in a last tr after the loop gives an error when deleting (or then adding) an element. -->
+          <span>
+            Items: {{ products.length }}
+          </span>
+
+          <span>
+            / TODOs: {{ todos.length }}
+          </span>
+
+          <span>
+            / Total weight: {{ products-weight }}
+          </span>
+        </div>
 
         <table class="table">
           {% for product in products %}
@@ -62,8 +76,11 @@ ISSR demo with Djula
               {% else %}
               <span> {{ product.title }} </span>
               {% endif %}
+            </td>
 
-              <td>
+            <td> {{ product.weight }} </td>
+
+            <td>
                 <button action="check"
                     value="{{ product.id }}"
                     onclick="rr(this)"
@@ -74,20 +91,20 @@ ISSR demo with Djula
                   Mark Done
                   {% endif %}
                 </button>
-              </td>
+            </td>
 
-              <td>
+            <td>
                 <span class="icon" style="cursor: pointer"
                     action="delete-product"
                     value="{{ product.id }}"
                     onclick="rr(this)">
                   <i class="fas fa-trash-alt"></i>
                 </span>
-              </td>
-
             </td>
+
           </tr>
           {% endfor %}
+
         </table>
 
       </div>
