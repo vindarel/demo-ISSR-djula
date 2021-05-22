@@ -15,7 +15,7 @@ It's time to envision serious things with this library.
 
 This is interactive as we expect:
 
-![](shot.png)
+![](todolist.gif)
 
 ## Usage
 
