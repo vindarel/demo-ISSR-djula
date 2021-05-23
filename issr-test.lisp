@@ -1,22 +1,18 @@
 
 #+(or)
-(ql:quickload '("hunchenissr" "markup" "log4cl"))
+(ql:quickload '("hunchenissr" "log4cl"))
 
-;; elisp side:
-;; (add-to-list 'load-path "~/quicklisp/dists/quicklisp/software/markup-20201220-git/")
-;; (require 'lisp-markup)
-;;
 ;; It's possible to use C-c C-p to eval and print the generated HTML in a buffer. With djula:render-template* or markup.
 
 (defpackage :issr-test
-  (:use :cl
-        :markup)
+  (:use :cl)
   (:import-from #:hunchenissr
                 define-easy-handler
                 *id*
                 *ws-port*
                 start
-                stop))
+                stop)
+  (:export :main))
 
 (in-package #:issr-test)
 
@@ -29,17 +25,17 @@
 
 (defparameter *products* (list))
 
-(defun start-app ()
+(defun start-app (&key (port 8080) (ws-port 4433))
   (setf *server*
         (start (make-instance 'hunchentoot:easy-acceptor
-                              :port 8080
+                              :port port
                               :document-root "resources/")
-               :ws-port 4433)))
+               :ws-port ws-port)))
 
 ;;
 ;; models.lisp
 ;;
-;; Imagine it's our DB interface.
+;; Imagine this is our DB interface.
 ;;
 (defclass product ()
   ((id :initform (string (gensym "ID-"))
@@ -75,7 +71,9 @@
   (loop for title in '("foo" "bar" "baz")
      collect (make-product title)))
 
+;;
 ;; Start with data.
+;;
 (setf *products* (create-products))
 
 ;;
@@ -87,6 +85,10 @@
 ;;
 ;; We have one route: localhost:8080/products
 ;;
+
+(define-easy-handler (url/root :uri "/") ()
+  (hunchentoot:redirect "/products"))
+
 (define-easy-handler (products :uri "/products")
     ;; Actions:
     (add-new-task
@@ -117,7 +119,6 @@
       (log:info delete-product)
       (setf *products* (delete-product-from-id delete-product)))
 
-    ;; (render-markup-template *products* :add-new-product-p add-new-product-p)
     (djula:render-template* +products.html+ nil
                             :issr-id *id*
                             :ws-port *ws-port*
@@ -132,3 +133,42 @@
 ;;
 ;; and that's it.
 ;;
+
+(defun getenv-integer (env)
+  (ignore-errors (parse-integer (uiop:getenv env))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Entry point (for executable).
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun main (&key (port 8080 port-p) (ws-port 4433 ws-port-p))
+  ;; main is called with Roswell or manually.
+  ;; Check the ports in env.
+
+  (unless port-p
+    (setf port (or (getenv-integer "ISSR_PORT")
+                   port)))
+  (unless ws-port-p
+    (setf ws-port (or (getenv-integer "ISSR_WS_PORT")
+                      ws-port)))
+
+  (uiop:format! t "Starting a great ISSR example on http://localhost:~a/products~&" port)
+
+  (handler-case
+      (progn
+        (start-app :port port :ws-port ws-port)
+
+        ;; Let the webserver run
+        ;; (put its thread on the foreground, for the script not to instantly quit).
+        ;; warning: hardcoded "hunchentoot".
+        (bt:join-thread (find-if (lambda (th)
+                                   (search "hunchentoot" (bt:thread-name th)))
+                                 (bt:all-threads))))
+
+    (usocket:address-in-use-error ()
+      (format t "~&Address(es) already in use. Double check the app and websocket ports.~&"))
+    (#+sbcl sb-sys:interactive-interrupt ()
+            (progn
+              (format *error-output* "Aborting. Hope you liked it!~&")
+              (uiop:quit)))
+    (error (c)
+      (format t "~&An error occured:~&~a~&" c))))

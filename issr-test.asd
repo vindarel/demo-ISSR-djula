@@ -11,7 +11,6 @@
   :description "Interactive TODO-app with ISSR without JavaScript"
   :depends-on (:hunchenissr
                :log4cl
-               :markup
                :djula
                :str)
   :components ((:file "issr-test")

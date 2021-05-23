@@ -1,0 +1,25 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+
+(defun help ()
+  (format t "~&Usage:
+  hello.~&"))
+
+(load (truename "issr-test.asd"))
+(ql:quickload "issr-test")
+
+(defun fact (n)
+  (if (zerop n)
+      1
+      (* n (fact (1- n)))))
+
+(defun main (n &rest argv)
+  (declare (ignore argv))
+  (format t "~&Factorial ~D = ~D~%" n (fact (parse-integer n)))
+  (format t "~&Starting app…~&")
+
+  ;; Start the app.
+  (issr-test::main :port 6789))
