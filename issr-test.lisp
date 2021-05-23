@@ -67,6 +67,14 @@
 (defun delete-product-from-id (id)
   (delete id *products* :test #'equal :key #'product-id))
 
+(defun search-products (q)
+  "Search this query (string) inside the products' titles,
+  Return the ones matching (a list)."
+  (loop for item in *products*
+     if (str:containsp q (title item)
+                       :ignore-case t)
+     collect item))
+
 (defun create-products ()
   (loop for title in '("foo" "bar" "baz")
      collect (make-product title)))
