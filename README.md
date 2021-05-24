@@ -62,7 +62,10 @@ It is when we `ros install foo` that we can run `ros exec foo`.
 
 ### Remarks
 
-- We can't update little parts of the DOM. That is not the philosophy of ISSR.
+- We can't update little parts of the DOM. That is not the philosophy of ISSR. To be more precise:
+
+> You can update small parts on the client, but the whole thing is still generated on server, then only small changes are sent to the client.
+
 - How to add transitions on added elements? It seems difficult (it's possible in JS. htmx has workarounds for this).
 
 ## See also:
