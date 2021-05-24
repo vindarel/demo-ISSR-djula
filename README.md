@@ -34,7 +34,7 @@ On the terminal:
 
     make run
     # aka
-    sbcl --non-interactive --load issr-test.asd --eval '(ql:quickload :issr-test)' --eval '(issr-test:main)'
+    sbcl --load issr-test.asd --eval '(ql:quickload :issr-test)' --eval '(issr-test:main)'
 
 
 paramaters: `ISSR_PORT` and `ISSR_WS_PORT`.
@@ -46,6 +46,8 @@ Manually (Slime):
 - (issr-test:main :port xxx :ws-port xyz)
 
 Access http://localhost:8080/products
+
+You also get a Lisp REPL on the terminal from which you can interact with the running web app.
 
 ## Dev
 
@@ -73,3 +75,11 @@ It is when we `ros install foo` that we can run `ros exec foo`.
 - https://htmx.org/ - similar in scope. We can update precise parts of the DOM, built-in transitions support… Websockets support is "experimental", whereas it is the primary focus of ISSR.
 
 - https://github.com/dbohdan/liveviews
+
+Other demos:
+
+- on live-reloading a running web app thanks to the REPL: https://lisp-journey.gitlab.io/blog/i-realized-that-to-live-reload-my-web-app-is-easy-and-convenient/ (-> https://github.com/vindarel/lisp-web-live-reload-example)
+
+> The very best part of image-based programming in action.
+
+:]

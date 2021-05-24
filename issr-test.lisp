@@ -165,12 +165,16 @@
       (progn
         (start-app :port port :ws-port ws-port)
 
+        ;; NB: we need the following thread capture only for the binary,
+        ;; running from sources is OK and it gets us the REPL if we don't use --non-interactive.
+        ;;
         ;; Let the webserver run
         ;; (put its thread on the foreground, for the script not to instantly quit).
         ;; warning: hardcoded "hunchentoot".
-        (bt:join-thread (find-if (lambda (th)
-                                   (search "hunchentoot" (bt:thread-name th)))
-                                 (bt:all-threads))))
+        ;; (bt:join-thread (find-if (lambda (th)
+        ;;                            (search "hunchentoot" (bt:thread-name th)))
+        ;;                          (bt:all-threads)))
+        )
 
     (usocket:address-in-use-error ()
       (format t "~&Address(es) already in use. Double check the app and websocket ports.~&"))
