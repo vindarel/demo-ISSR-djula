@@ -9,12 +9,17 @@
   :bug-tracker ""
   :source-control (:git "")
   :description "Interactive TODO-app with ISSR without JavaScript"
-  :depends-on (:hunchenissr
-               :log4cl
-               :djula
-               :str)
+
+  ;; build .deb (try to)
+  :defsystem-depends-on ("linux-packaging")
+  :class "linux-packaging:deb"
+  :package-name "issr-test"
+
+  :depends-on (:str)
   :components ((:file "issr-test")
                (:static-file "README.md"))
 
-
-  :in-order-to ((test-op (test-op :str.test))))
+  :build-operation "linux-packaging:build-op"
+  :build-pathname "issr-test"
+  :entry-point "issr-test::main"
+  )
